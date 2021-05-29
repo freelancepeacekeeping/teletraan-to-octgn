@@ -54,16 +54,36 @@ function writeProperty($writer, $propertyName, $value) {
     }
 }
 
-function toType($type) {
+// Function:
+//   If a character, this is their subname
+//   If a stratagem, this is the target
+//   If this is a battle card, it's Upgrade, Action, Secret Action
+// Extra:
+//   If an Upgrade, it's Armor, Weapon, Utility
+function toType($row) {
+    $type = $row['type'];
     switch($type) {
       case 'battle':
-        return 'Battle-TODO';
+        if($row['function'] == 'Upgrade') {
+          return $row['function'] . ' - ' . $row['extra'];
+        } else {
+          return $row['function'];
+        }
       case 'bot':
-        return 'Bot-TODO';
+        // TODO: HARD CODED Mode1
+        return 'Character - ' . $row['mode1'] . ' Mode';
       case 'stratagem':
         return 'Stratagem';
       case 'combiner':
           return 'Character - Combiner Mode';
+        return '';
+    }
+}
+
+function subName($row) {
+    if($row['type'] == 'bot' or $row['type'] == 'combiner') {
+        return ' - ' . $row['function'];
+    } else {
         return '';
     }
 }
@@ -183,12 +203,14 @@ try {
 </card>
          */
 
+
         $writer->startElement('card');
         $writer->writeAttribute('id', getGUID());
-        $writer->writeAttribute('name', $row['name']);
+        $writer->writeAttribute('name', $row['name'] . subName($row));
+        // TODO: Need to use function to add subname if its a character
         $writer->writeAttribute('size', toSize($row['size']));
         writeProperty($writer, 'Card Number', 'X:' . cardNumberPrefix($row['type']) . $row['number']);
-        writeProperty($writer, 'Type', toType($row['type']));
+        writeProperty($writer, 'Type', toType($row));
         writeProperty($writer, 'ATK', $row['mode1attack']);
         writeProperty($writer, 'HP', $row['mode1health']);
         writeProperty($writer, 'DEF', $row['mode1defense']);
