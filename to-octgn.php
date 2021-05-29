@@ -196,10 +196,10 @@ try {
         writePip($writer, $row['icon1'], $row['icon2'], $row['icon3']);
         // Teletraan keeps the faction in the traits
         if($row['mode1traits']) {
-            $trait_array = explode($row['mode1traits'], ';');
+            $trait_array = explode(';', trim($row['mode1traits'], ';'));
             writeProperty($writer, 'Faction', $trait_array[0]); 
-            if($row['mode1traits'][1]) {
-                writeProperty($writer, 'Traits', array_slice($trait_array, 1));
+            if(count($trait_array) > 1) {
+                writeProperty($writer, 'Traits', implode(',', array_slice($trait_array, 2)));
             }
         }
         writeProperty($writer, 'Text', $row['mode1text']);
