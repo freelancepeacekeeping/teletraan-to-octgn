@@ -150,6 +150,10 @@ function writeFactionAndTraits($writer, $traits) {
     }
 }
 
+function cleanText($text) {
+    return str_replace("\r", "", str_replace("\n", " ", $text));
+}
+
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
@@ -230,7 +234,7 @@ try {
         writeProperty($writer, 'Stars', $row['stars']);
         writePip($writer, $row['icon1'], $row['icon2'], $row['icon3']);
         writeFactionAndTraits($writer, $row['mode1traits']);
-        writeProperty($writer, 'Text', $row['mode1text']);
+        writeProperty($writer, 'Text', cleanText($row['mode1text']));
         if($row['mode2']) {
             $writer->startElement('alternate');
             if($row['mode2'] == "Alt") {
@@ -255,7 +259,7 @@ try {
             writeProperty($writer, 'HP', $row['mode2health']);
             writeProperty($writer, 'DEF', $row['mode2defense']);
             writeFactionAndTraits($writer, $row['mode2traits']);
-            writeProperty($writer, 'Text', $row['mode2text']);
+            writeProperty($writer, 'Text', cleanText($row['mode2text']));
             $writer->endElement();
         }
         if($row['mode3']) {
@@ -268,7 +272,7 @@ try {
             writeProperty($writer, 'HP', $row['mode3health']);
             writeProperty($writer, 'DEF', $row['mode3defense']);
             writeFactionAndTraits($writer, $row['mode3traits']);
-            writeProperty($writer, 'Text', $row['mode3text']);
+            writeProperty($writer, 'Text', cleanText($row['mode3text']));
             $writer->endElement();
         }
         writeProperty($writer, 'Rarity', toRarityString($row['rarity']));
