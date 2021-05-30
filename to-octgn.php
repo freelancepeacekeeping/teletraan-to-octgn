@@ -216,6 +216,7 @@ try {
          */
 
 
+        $writer->startElement('cards');
         $writer->startElement('card');
         $writer->writeAttribute('id', getGUID());
         $writer->writeAttribute('name', $row['name'] . subName($row));
@@ -270,6 +271,7 @@ try {
 
     $dbh = null;
 
+    $writer->endDocument();
     $writer->endDocument();
     $writer->flush();
 } catch (PDOException $e) {
