@@ -29,6 +29,8 @@ function toSize($size) {
         return 'Extra Large';
       case 'combiner':
         return 'Extra Large';
+      default:
+        return 'Small';
     }
 }
 
@@ -233,6 +235,8 @@ try {
             if($row['mode2'] == "Alt") {
                 // Supporting triple changers
                 $writer->writeAttribute('type', 'alt2');
+            } elseif($row['type'] == 'stratagem') {
+                $writer->writeAttribute('type', 'back');
             } else {
                 $writer->writeAttribute('type', 'bot');
             }
