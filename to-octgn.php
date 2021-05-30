@@ -168,6 +168,7 @@ try {
     $writer->writeAttribute('gameId', 'f44befce-4d6d-4fb9-a286-9585f36aece9');
     $writer->writeAttribute('gameVersion', '0.0.0.1');
     $writer->writeAttribute('version', '0.0.0.1');
+    $writer->startElement('cards');
 
     $dbh = new PDO('mysql:host=localhost;dbname=Teletraan1', 'hen', '');
     foreach($dbh->query('SELECT * FROM cards WHERE wave LIKE "%BFA%"') as $row) {
@@ -217,7 +218,6 @@ try {
          */
 
 
-        $writer->startElement('cards');
         $writer->startElement('card');
         $writer->writeAttribute('id', getGUID());
         $writer->writeAttribute('name', $row['name'] . subName($row));
@@ -268,10 +268,10 @@ try {
         $writer->endElement();
     }
     $writer->endElement();
+    $writer->endElement();
 
     $dbh = null;
 
-    $writer->endDocument();
     $writer->endDocument();
     $writer->flush();
 } catch (PDOException $e) {
