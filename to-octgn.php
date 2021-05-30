@@ -238,10 +238,17 @@ try {
                 $writer->writeAttribute('type', 'alt2');
             } elseif($row['type'] == 'stratagem') {
                 $writer->writeAttribute('type', 'back');
+            } elseif(in_array($row['mode2'], array('Weapon','Armor','Utility'))) {
+            // TODO: Decide if this is even how we want to handle this
+                $writer->writeAttribute('type', 'upgrade');
             } else {
                 $writer->writeAttribute('type', 'bot');
             }
-            $writer->writeAttribute('name', $row['name'] . subName($row));
+            if(in_array($row['mode2'], array('Weapon','Armor','Utility'))) {
+                $writer->writeAttribute('name', $row['extra']);
+            } else {
+                $writer->writeAttribute('name', $row['name'] . subName($row));
+            }
             $writer->writeAttribute('size', toSize($row['size']));
             writeProperty($writer, 'Type', toType($row, 2));
             writeProperty($writer, 'ATK', $row['mode2attack']);
