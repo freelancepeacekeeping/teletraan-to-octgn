@@ -60,7 +60,7 @@ function writeProperty($writer, $propertyName, $value) {
 //   If this is a battle card, it's Upgrade, Action, Secret Action
 // Extra:
 //   If an Upgrade, it's Armor, Weapon, Utility
-function toType($row) {
+function toType($row, $modenum) {
     $type = $row['type'];
     switch($type) {
       case 'battle':
@@ -70,8 +70,7 @@ function toType($row) {
           return $row['function'];
         }
       case 'bot':
-        // TODO: HARD CODED Mode1
-        return 'Character - ' . $row['mode1'] . ' Mode';
+        return 'Character - ' . $row['mode' . $modenum] . ' Mode';
       case 'stratagem':
         return 'Stratagem';
       case 'combiner':
@@ -135,6 +134,17 @@ function writePip($writer, $icon1, $icon2, $icon3) {
     writeProperty($writer, 'Black Pips', $wobug[2]);
     writeProperty($writer, 'Blue Pips', $wobug[3]);
     writeProperty($writer, 'Green Pips', $wobug[4]);
+}
+
+function writeFactionAndTraits($writer, $traits) {
+    if($traits) {
+        $trait_array = explode(';', trim($traits, ';'));
+        // Teletraan keeps the faction in the traits
+        writeProperty($writer, 'Faction', $trait_array[0]);
+        if(count($trait_array) > 1) {
+            writeProperty($writer, 'Traits', implode(',', array_slice($trait_array, 2)));
+        }
+    }
 }
 
 error_reporting(E_ALL);
@@ -210,21 +220,45 @@ try {
         // TODO: Need to use function to add subname if its a character
         $writer->writeAttribute('size', toSize($row['size']));
         writeProperty($writer, 'Card Number', 'X:' . cardNumberPrefix($row['type']) . $row['number']);
-        writeProperty($writer, 'Type', toType($row));
+        writeProperty($writer, 'Type', toType($row, 1));
         writeProperty($writer, 'ATK', $row['mode1attack']);
         writeProperty($writer, 'HP', $row['mode1health']);
         writeProperty($writer, 'DEF', $row['mode1defense']);
         writeProperty($writer, 'Stars', $row['stars']);
         writePip($writer, $row['icon1'], $row['icon2'], $row['icon3']);
-        // Teletraan keeps the faction in the traits
-        if($row['mode1traits']) {
-            $trait_array = explode(';', trim($row['mode1traits'], ';'));
-            writeProperty($writer, 'Faction', $trait_array[0]); 
-            if(count($trait_array) > 1) {
-                writeProperty($writer, 'Traits', implode(',', array_slice($trait_array, 2)));
-            }
-        }
+        writeFactionAndTraits($writer, $row['mode1traits']);
         writeProperty($writer, 'Text', $row['mode1text']);
+        if($row['mode2']) {
+            $writer->startElement('alternate');
+            if($row['mode2'] == "Alt") {
+                // Supporting triple changers
+                $writer->writeAttribute('type', 'alt2');
+            } else {
+                $writer->writeAttribute('type', 'bot');
+            }
+            $writer->writeAttribute('name', $row['name'] . subName($row));
+            $writer->writeAttribute('size', toSize($row['size']));
+            writeProperty($writer, 'Type', toType($row, 2));
+            writeProperty($writer, 'ATK', $row['mode2attack']);
+            writeProperty($writer, 'HP', $row['mode2health']);
+            writeProperty($writer, 'DEF', $row['mode2defense']);
+            writeFactionAndTraits($writer, $row['mode2traits']);
+            writeProperty($writer, 'Text', $row['mode2text']);
+            $writer->endElement();
+        }
+        if($row['mode3']) {
+            $writer->startElement('alternate');
+            $writer->writeAttribute('type', 'bot');
+            $writer->writeAttribute('name', $row['name'] . subName($row));
+            $writer->writeAttribute('size', toSize($row['size']));
+            writeProperty($writer, 'Type', toType($row, 3));
+            writeProperty($writer, 'ATK', $row['mode3attack']);
+            writeProperty($writer, 'HP', $row['mode3health']);
+            writeProperty($writer, 'DEF', $row['mode3defense']);
+            writeFactionAndTraits($writer, $row['mode3traits']);
+            writeProperty($writer, 'Text', $row['mode3text']);
+            $writer->endElement();
+        }
         writeProperty($writer, 'Rarity', toRarityString($row['rarity']));
         $writer->endElement();
     }
@@ -232,7 +266,7 @@ try {
 
     $dbh = null;
 
-    $writer->endDocument();   
+    $writer->endDocument();
     $writer->flush();
 } catch (PDOException $e) {
     print "Error!: " . $e->getMessage() . "<br/>";
