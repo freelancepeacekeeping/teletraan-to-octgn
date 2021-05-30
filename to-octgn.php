@@ -83,10 +83,11 @@ function toType($row, $modenum) {
 
 function subName($row) {
     if($row['type'] == 'bot' or $row['type'] == 'combiner') {
-        return ' - ' . $row['function'];
-    } else {
-        return '';
+        if($row['function']) {
+            return ' - ' . $row['function'];
+        }
     }
+    return '';
 }
 
 // 'battle, bot, stratagem, combiner'
