@@ -220,7 +220,6 @@ try {
         $writer->startElement('card');
         $writer->writeAttribute('id', getGUID());
         $writer->writeAttribute('name', $row['name'] . subName($row));
-        // TODO: Need to use function to add subname if its a character
         $writer->writeAttribute('size', toSize($row['size']));
         writeProperty($writer, 'Card Number', 'X:' . cardNumberPrefix($row['type']) . $row['number']);
         writeProperty($writer, 'Type', toType($row, 1));
