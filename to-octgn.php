@@ -74,7 +74,11 @@ function toType($row, $modenum) {
       case 'bot':
         return 'Character - ' . $row['mode' . $modenum] . ' Mode';
       case 'stratagem':
-        return 'Stratagem';
+        if($modenum == 1) {
+          return 'Stratagem';
+        } else {
+          return 'Stratagem - back';
+        }
       case 'combiner':
           return 'Character - Combiner Mode';
         return '';
